@@ -251,6 +251,7 @@ class _PengumumanPageState extends State<PengumumanPage> {
       appBar: AppBar(
         title: const Text('Pengumuman'),
         backgroundColor: Colors.red,
+        automaticallyImplyLeading: false,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
