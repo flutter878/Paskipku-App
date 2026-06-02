@@ -7,6 +7,7 @@ import 'dokumen_page.dart';
 import 'pengumuman_page.dart';
 import 'kartu_peserta_page.dart';
 import 'jadwal_seleksi_page.dart';
+import 'hasil_seleksi_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -544,6 +545,15 @@ class _DashboardPageState extends State<DashboardPage> {
                       subtitle: 'Lihat jadwal tahapan seleksi Paskibraka.',
                       onTap: () {
                         goToPage(const JadwalSeleksiPage());
+                      },
+                    ),
+
+                    menuItem(
+                      icon: Icons.emoji_events_outlined,
+                      title: 'Hasil Seleksi',
+                      subtitle: 'Lihat hasil setiap tahapan seleksi.',
+                      onTap: () {
+                        goToPage(const HasilSeleksiPage());
                       },
                     ),
 

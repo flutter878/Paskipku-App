@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'pengumuman_page.dart';
 import 'jadwal_seleksi_page.dart';
+import 'hasil_seleksi_page.dart';
 
 class InfoPage extends StatelessWidget {
   const InfoPage({super.key});
@@ -189,6 +190,13 @@ class InfoPage extends StatelessWidget {
             title: 'Jadwal Seleksi',
             subtitle: 'Lihat jadwal tahapan seleksi Paskibraka.',
             page: const JadwalSeleksiPage(),
+          ),
+          infoCard(
+            context: context,
+            icon: Icons.emoji_events_outlined,
+            title: 'Hasil Seleksi',
+            subtitle: 'Lihat hasil seleksi berdasarkan tahapan.',
+            page: const HasilSeleksiPage(),
           ),
         ],
       ),
