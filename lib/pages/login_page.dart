@@ -10,52 +10,109 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController loginController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
   final AuthService authService = AuthService();
+
+  final loginController = TextEditingController();
+  final passwordController = TextEditingController();
 
   bool isLoading = false;
   bool obscurePassword = true;
 
   Future<void> handleLogin() async {
-  if (loginController.text.isEmpty || passwordController.text.isEmpty) {
-    showMessage('NIK/Email dan password wajib diisi.');
-    return;
-  }
-
-  setState(() {
-    isLoading = true;
-  });
-
-  try {
-    final response = await authService.login(
-      login: loginController.text.trim(),
-      password: passwordController.text.trim(),
-    );
-
-    if (!mounted) return;
-
-    if (response['token'] != null) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      showMessage(response['message'] ?? 'Login gagal.');
+    if (loginController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      showMessage('NIK/Email dan password wajib diisi.');
+      return;
     }
-  } catch (e) {
-    if (!mounted) return;
-    showMessage('Terjadi kesalahan: $e');
-  } finally {
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await authService.login(
+        login: loginController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      if (response['token'] != null) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        showMessage(
+          response['message'] ?? 'Login gagal. Periksa NIK/Email dan password.',
+        );
+      }
+    } catch (e) {
+      showMessage('Terjadi kesalahan koneksi ke server.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
-}
 
   void showMessage(String message) {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Widget inputField({
+    required String label,
+    required String hint,
+    required IconData icon,
+    required TextEditingController controller,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword ? obscurePassword : false,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.red),
+        suffixIcon: isPassword
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    obscurePassword = !obscurePassword;
+                  });
+                },
+                icon: Icon(
+                  obscurePassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+      ),
     );
   }
 
@@ -69,105 +126,182 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF6F7FB),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.flag,
-                      size: 70,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Login Peserta',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Pendaftaran Paskibraka',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
 
-                    TextField(
-                      controller: loginController,
-                      decoration: const InputDecoration(
-                        labelText: 'NIK / Email',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person),
-                      ),
+              Center(
+                child: Container(
+                  width: 92,
+                  height: 92,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFFE53935),
+                        Color(0xFFB71C1C),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.red.withOpacity(0.25),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.flag_rounded,
+                    color: Colors.white,
+                    size: 52,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              const Center(
+                child: Text(
+                  'Selamat Datang',
+                  style: TextStyle(
+                    color: Color(0xFF1F2937),
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Center(
+                child: Text(
+                  'Login untuk melanjutkan pendaftaran Paskibraka',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 34),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(26),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 22,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    inputField(
+                      label: 'NIK atau Email',
+                      hint: 'Masukkan NIK atau email',
+                      icon: Icons.person_outline,
+                      controller: loginController,
+                    ),
+
                     const SizedBox(height: 16),
 
-                    TextField(
+                    inputField(
+                      label: 'Password',
+                      hint: 'Masukkan password',
+                      icon: Icons.lock_outline,
                       controller: passwordController,
-                      obscureText: obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              obscurePassword = !obscurePassword;
-                            });
-                          },
-                        ),
-                      ),
+                      isPassword: true,
                     ),
-                    const SizedBox(height: 20),
+
+                    const SizedBox(height: 22),
 
                     SizedBox(
                       width: double.infinity,
-                      height: 48,
+                      height: 52,
                       child: ElevatedButton(
                         onPressed: isLoading ? null : handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
                         ),
                         child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.6,
+                                ),
                               )
                             : const Text(
                                 'Login',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: const Text('Belum punya akun? Daftar di sini'),
                     ),
                   ],
                 ),
               ),
-            ),
+
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Belum punya akun?',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      'Daftar Sekarang',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              Center(
+                child: Text(
+                  '© Paskibraka Mobile',
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
