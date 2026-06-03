@@ -28,6 +28,10 @@ class _DashboardPageState extends State<DashboardPage> {
   int dokumenMenunggu = 0;
   int dokumenRevisi = 0;
 
+  String hasilTerakhirTahap = '-';
+  String hasilTerakhirStatus = 'menunggu';
+  String hasilTerakhirNilai = '-';
+
   final AuthService authService = AuthService();
 
   @override
@@ -53,6 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
       if (user != null) {
         final biodata = user['biodata'];
         final dokumen = user['dokumen'] ?? [];
+        final hasilSeleksi = user['hasil_seleksi'] ?? [];
 
         if (biodata != null) {
           statusVerifikasi = biodata['status_verifikasi'] ?? 'belum_lengkap';
@@ -67,6 +72,16 @@ class _DashboardPageState extends State<DashboardPage> {
             .length;
         dokumenRevisi =
             dokumen.where((item) => item['status_dokumen'] == 'revisi').length;
+        
+        if (hasilSeleksi.isNotEmpty) {
+        final hasilTerakhir = hasilSeleksi[0];
+
+        hasilTerakhirTahap = hasilTerakhir['tahap'] ?? '-';
+        hasilTerakhirStatus = hasilTerakhir['status'] ?? 'menunggu';
+        hasilTerakhirNilai = hasilTerakhir['nilai'] == null
+            ? '-'
+            : hasilTerakhir['nilai'].toString();
+      }
       }
     } catch (e) {
       showMessage('Gagal memuat dashboard.');
@@ -104,6 +119,45 @@ class _DashboardPageState extends State<DashboardPage> {
         return const Color(0xFF6B7280);
     }
   }
+
+  String hasilStatusText(String status) {
+  switch (status) {
+    case 'lulus':
+      return 'Lulus';
+    case 'tidak_lulus':
+      return 'Tidak Lulus';
+    case 'cadangan':
+      return 'Cadangan';
+    default:
+      return 'Menunggu';
+  }
+}
+
+Color hasilStatusColor(String status) {
+  switch (status) {
+    case 'lulus':
+      return const Color(0xFF16A34A);
+    case 'tidak_lulus':
+      return const Color(0xFFDC2626);
+    case 'cadangan':
+      return const Color(0xFFF59E0B);
+    default:
+      return const Color(0xFF6B7280);
+  }
+}
+
+IconData hasilStatusIcon(String status) {
+  switch (status) {
+    case 'lulus':
+      return Icons.check_circle_rounded;
+    case 'tidak_lulus':
+      return Icons.cancel_rounded;
+    case 'cadangan':
+      return Icons.hourglass_bottom_rounded;
+    default:
+      return Icons.pending_rounded;
+  }
+}
 
   Widget headerSection() {
     return Container(
@@ -310,6 +364,96 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  Widget hasilSeleksiCard() {
+  final color = hasilStatusColor(hasilTerakhirStatus);
+
+  return Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(top: 18),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(22),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 16,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(
+            hasilStatusIcon(hasilTerakhirStatus),
+            color: color,
+            size: 28,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Hasil Seleksi Terakhir',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                hasilTerakhirTahap == '-'
+                    ? 'Belum ada hasil seleksi'
+                    : hasilTerakhirTahap,
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  Text(
+                    hasilStatusText(hasilTerakhirStatus),
+                    style: TextStyle(
+                      color: color,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Nilai: $hasilTerakhirNilai',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Icon(
+          Icons.chevron_right_rounded,
+          color: Colors.grey.shade400,
+        ),
+      ],
+    ),
+  );
+}
+
   Widget menuItem({
     required IconData icon,
     required String title,
@@ -463,6 +607,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     headerSection(),
 
                     statusCard(),
+
+                    hasilSeleksiCard(),
 
                     const SizedBox(height: 24),
 
