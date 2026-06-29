@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -17,6 +16,7 @@ class DokumenService {
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
     );
 
@@ -29,6 +29,13 @@ class DokumenService {
   }) async {
     final token = await _authService.getToken();
 
+    if (token == null || token.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Token tidak ditemukan. Silakan login ulang.',
+      };
+    }
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('${ApiConfig.baseUrl}/dokumen/upload'),
@@ -37,15 +44,30 @@ class DokumenService {
     request.headers.addAll({
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
+      'X-Authorization': 'Bearer $token',
     });
 
     request.fields['jenis_dokumen'] = jenisDokumen;
+
     request.files.add(
-      await http.MultipartFile.fromPath('file', filePath),
+      await http.MultipartFile.fromPath(
+        'file',
+        filePath,
+      ),
     );
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
+
+    print('UPLOAD STATUS: ${response.statusCode}');
+    print('UPLOAD BODY: ${response.body}');
+
+    if (response.body.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Server tidak mengirim response.',
+      };
+    }
 
     return jsonDecode(response.body);
   }
@@ -58,6 +80,7 @@ class DokumenService {
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
     );
 

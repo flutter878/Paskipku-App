@@ -15,6 +15,7 @@ class BiodataService {
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
     );
 
@@ -40,6 +41,7 @@ class BiodataService {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'nama_lengkap': namaLengkap,

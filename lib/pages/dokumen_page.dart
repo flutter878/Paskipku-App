@@ -269,37 +269,76 @@ class _DokumenPageState extends State<DokumenPage> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: isUploading
-                        ? null
-                        : () {
-                            pilihDanUpload(jenis['value']!);
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                  child: SizedBox(
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: isUploading
+                          ? null
+                          : () {
+                              pilihDanUpload(jenis['value']!);
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.red.shade200,
+                        disabledForegroundColor: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.upload_file_rounded,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        sudahUpload ? 'Upload Ulang' : 'Upload Berkas',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    icon: const Icon(Icons.upload_file),
-                    label: Text(sudahUpload ? 'Upload Ulang' : 'Upload'),
                   ),
                 ),
 
                 if (sudahUpload) ...[
-                  const SizedBox(width: 8),
-                  IconButton(
-                    tooltip: 'Lihat File',
-                    onPressed: fileUrl == null
-                        ? null
-                        : () {
-                            bukaFile(fileUrl);
-                          },
-                    icon: const Icon(Icons.visibility, color: Colors.blue),
+                  const SizedBox(width: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.10),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      tooltip: 'Lihat File',
+                      onPressed: fileUrl == null
+                          ? null
+                          : () {
+                              bukaFile(fileUrl);
+                            },
+                      icon: const Icon(
+                        Icons.visibility_rounded,
+                        color: Colors.blue,
+                      ),
+                    ),
                   ),
-                  IconButton(
-                    tooltip: 'Hapus',
-                    onPressed: () {
-                      hapusDokumen(dokumen['id']);
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                  const SizedBox(width: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.10),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      tooltip: 'Hapus',
+                      onPressed: () {
+                        hapusDokumen(dokumen['id']);
+                      },
+                      icon: const Icon(
+                        Icons.delete_rounded,
+                        color: Colors.red,
+                      ),
+                    ),
                   ),
                 ],
               ],

@@ -58,6 +58,8 @@ class AuthService {
     await prefs.setString('name', data['user']['name']);
     await prefs.setString('email', data['user']['email']);
     await prefs.setString('nik', data['user']['nik']);
+
+    await debugToken();
   }
 
   return data;
@@ -66,11 +68,15 @@ class AuthService {
   Future<Map<String, dynamic>> profile() async {
     final token = await getToken();
 
+    print('PROFILE URL: ${ApiConfig.baseUrl}/profile');
+    print('PROFILE TOKEN: $token');
+
     final response = await http.get(
       Uri.parse('${ApiConfig.baseUrl}/profile'),
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
     );
 
@@ -103,4 +109,18 @@ class AuthService {
     final token = await getToken();
     return token != null;
   }
+
+  Future<void> debugToken() async {
+  final token = await getToken();
+
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/debug-token'),
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'X-Authorization': 'Bearer $token',
+    },
+  );
+
+}
 }

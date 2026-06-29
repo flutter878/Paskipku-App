@@ -147,6 +147,7 @@ class _ProfilPageState extends State<ProfilPage> {
               onPressed: logout,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.logout),
               label: const Text('Logout'),

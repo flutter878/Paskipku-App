@@ -158,6 +158,7 @@ class _PengumumanPageState extends State<PengumumanPage> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
                         ),
                         icon: const Icon(Icons.attach_file),
                         label: const Text('Buka Lampiran'),

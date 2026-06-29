@@ -169,6 +169,7 @@ class _KartuPesertaPageState extends State<KartuPesertaPage> {
                 onPressed: isLoading ? null : bukaKartuPeserta,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
                 ),
                 icon: const Icon(Icons.picture_as_pdf),
                 label: isLoading

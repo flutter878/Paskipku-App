@@ -15,6 +15,7 @@ class JadwalSeleksiService {
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
+        'X-Authorization': 'Bearer $token',
       },
     ).timeout(const Duration(seconds: 10));
 

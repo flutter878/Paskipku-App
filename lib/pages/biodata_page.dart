@@ -301,6 +301,7 @@ class _BiodataPageState extends State<BiodataPage> {
                       onPressed: isSaving ? null : saveBiodata,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
                       ),
                       child: isSaving
                           ? const CircularProgressIndicator(color: Colors.white)
